@@ -40,6 +40,40 @@ app.post('/api/loadUserSettings', (req, res) => {
 	connection.end();
 });
 
+app.post('/api/getMovies', (req, res) => {
+	let connection = mysql.createConnection(config);
+	let sql = 'SELECT id, name, year, quality FROM movies';
+  
+	connection.query(sql, (error, results) => {
+	  if (error) {
+		return console.error(error.message);
+	  }
+	  res.json(results);
+	});
+  
+	connection.end();
+  });
+
+  app.post('/api/addReview', (req, res) => {
+	let connection = mysql.createConnection(config);
+	const { movieID, userID, reviewTitle, reviewContent, reviewScore } = req.body;
+  
+	let sql = `
+	  INSERT INTO Review (reviewTitle, reviewContent, reviewScore, userID, movieID)
+	  VALUES (?, ?, ?, ?, ?)`;
+	
+	connection.query(sql, [reviewTitle, reviewContent, reviewScore, userID, movieID], (error, results) => {
+	  if (error) {
+		console.error('Error inserting review:', error.message);
+		return res.status(500).json({ message: 'Failed to add review' });
+	  }
+	  console.log('Review added:', results);
+	  res.status(200).json({ message: 'Review added successfully' });
+	});
+  
+	connection.end();
+  });
+
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version

@@ -1,13 +1,15 @@
 import React from 'react';
 import AppBar from '../AppBar';
+import Review from './Review';
 
-const Landing = () => {
+
+const ReviewPage = () => {
     return (
         <div>
             <AppBar />
-            <h1>Landing Page</h1>
+            <Review />
         </div>
     );
 };
 
-export default Landing;
+export default ReviewPage;

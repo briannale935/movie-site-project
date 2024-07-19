@@ -11,9 +11,9 @@ function MovieSelection({ movies, selectedMovie, handleMovieChange }) {
         labelId="movie-select-label"
         id="movie-select"
       >
-        {movies.map((movie, index) => (
-          <MenuItem key={index} value={movie}>
-            {movie}
+        {movies.map((movie) => (
+          <MenuItem key={movie.id} value={movie.id}>
+            {movie.name}
           </MenuItem>
         ))}
       </Select>

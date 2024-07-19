@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Typography, Button } from '@mui/material';
 import MovieSelection from './MovieSelection';
 import ReviewTitle from './ReviewTitle';
@@ -6,19 +6,26 @@ import ReviewBody from './ReviewBody';
 import ReviewRating from './ReviewRating';
 
 function Review() {
-  const [movies, setMovies] = useState([
-    'Movie 1',
-    'Movie 2',
-    'Movie 3',
-    'Movie 4',
-    'Movie 5',
-  ]);
+  const [movies, setMovies] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState('');
   const [enteredTitle, setEnteredTitle] = useState('');
   const [enteredReview, setEnteredReview] = useState('');
   const [selectedRating, setSelectedRating] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [errors, setErrors] = useState({});
+  const [userID] = useState('1'); // Declare userID
+
+  useEffect(() => {
+    fetch('/api/getMovies', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setMovies(data))
+      .catch((error) => console.error('Error fetching movies:', error));
+  }, []);
 
   const handleMovieChange = (event) => {
     setSelectedMovie(event.target.value);
@@ -69,11 +76,29 @@ function Review() {
       setErrors(newErrors);
       setShowConfirmation(false);
     } else {
-      setShowConfirmation(true);
+      fetch('/api/addReview', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          movieID: selectedMovie,
+          userID: userID,
+          reviewTitle: enteredTitle,
+          reviewContent: enteredReview,
+          reviewScore: selectedRating,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Review added:', data);
+          setShowConfirmation(true);
+        })
+        .catch((error) => console.error('Error adding review:', error));
+      
       setErrors({});
     }
   };
-
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
