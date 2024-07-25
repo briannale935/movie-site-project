@@ -74,6 +74,63 @@ app.post('/api/getMovies', (req, res) => {
 	connection.end();
   });
 
+  app.post('/api/Search', (req, res) => {
+    const connection = mysql.createConnection(config);
+    const { searchMovie, searchActor, searchDirector } = req.body;
 
+    let query = `
+        SELECT 
+            m.name AS movie_name,
+            CONCAT(d.first_name, ' ', d.last_name) AS director_name,
+            AVG(r.reviewScore) AS average_score,
+            GROUP_CONCAT(
+                DISTINCT r.reviewContent SEPARATOR ' | '
+            ) AS all_reviews
+        FROM 
+            movies m
+        JOIN 
+            movies_directors md ON m.id = md.movie_id
+        JOIN 
+            directors d ON md.director_id = d.id
+        LEFT JOIN 
+            roles ro ON m.id = ro.movie_id
+        LEFT JOIN 
+            actors a ON ro.actor_id = a.id
+        LEFT JOIN 
+            Review r ON m.id = r.movieID
+    `;
+
+    const parameters = [];
+
+    if (searchMovie) {
+        query += ` WHERE m.name = ?`;
+        parameters.push(searchMovie);
+    }
+
+    if (searchActor) {
+        query += parameters.length ? ' AND ' : ' WHERE ';
+        query += `CONCAT(a.first_name, ' ', a.last_name) = ?`;
+        parameters.push(searchActor);
+    }
+
+    if (searchDirector) {
+        query += parameters.length ? ' AND ' : ' WHERE ';
+        query += `CONCAT(d.first_name, ' ', d.last_name) = ?`;
+        parameters.push(searchDirector);
+    }
+
+    query += ` GROUP BY m.id, d.first_name, d.last_name;`;
+
+    connection.query(query, parameters, (err, results) => {
+        if (err) {
+            console.error('Error executing query:', err.message);
+            return res.status(500).send('Database query error');
+        }
+
+        res.send({ express: JSON.stringify(results) });
+    });
+
+    connection.end();
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
