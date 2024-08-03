@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Typography, TextField, Button } from '@mui/material';
+import { Grid, Typography, TextField, Button, Box } from '@mui/material';
 import AppBar from '../AppBar';
 
 const Search = () => {
@@ -44,16 +44,25 @@ const Search = () => {
     };
 
     return (
-        <div>
+        <div style={{
+            background: 'linear-gradient(111.5deg, rgba(188, 226, 245, 0.9) 21.9%, rgba(255, 180, 159, 0.9) 92.2%)',
+            minHeight: '100vh',
+            padding: '20px'
+        }}>
             <AppBar />
             <Grid container direction="column" alignItems="center" spacing={2} padding={2}>
                 <Grid item xs={12} align="center">
-                    <Typography variant="h4" sx={{ marginBottom: '16px' }}>
+                    <Typography variant="h4" sx={{
+                        marginBottom: '16px',
+                        color: 'white',
+                        fontWeight: 600,
+                        textShadow: '1px 1px 4px rgba(0, 0, 0, 0.3)'
+                    }}>
                         Search for Movies
                     </Typography>
                 </Grid>
 
-                <Grid item xs={12} md={6} container direction="column" spacing={2}>
+                <Grid item xs={12} md={8} container direction="column" spacing={2}>
                     <Grid item xs={12}>
                         <TextField
                             label="Search by movie"
@@ -63,8 +72,20 @@ const Search = () => {
                             variant="outlined"
                             fullWidth
                             sx={{
-                                borderRadius: '20px',
-                                height: '80px',
+                                borderRadius: '8px',
+                                backgroundColor: '#fff',
+                                marginBottom: '8px',
+                                '& .MuiInputBase-root': {
+                                    '& fieldset': {
+                                        borderColor: '#ccc',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#aaa',
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#FF6F61',
+                                    },
+                                },
                             }}
                         />
                     </Grid>
@@ -77,8 +98,20 @@ const Search = () => {
                             variant="outlined"
                             fullWidth
                             sx={{
-                                borderRadius: '20px',
-                                height: '80px',
+                                borderRadius: '8px',
+                                backgroundColor: '#fff',
+                                marginBottom: '8px',
+                                '& .MuiInputBase-root': {
+                                    '& fieldset': {
+                                        borderColor: '#ccc',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#aaa',
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#FF6F61',
+                                    },
+                                },
                             }}
                         />
                     </Grid>
@@ -91,8 +124,20 @@ const Search = () => {
                             variant="outlined"
                             fullWidth
                             sx={{
-                                borderRadius: '20px',
-                                height: '80px',
+                                borderRadius: '8px',
+                                backgroundColor: '#fff',
+                                marginBottom: '8px',
+                                '& .MuiInputBase-root': {
+                                    '& fieldset': {
+                                        borderColor: '#ccc',
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#aaa',
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#FF6F61',
+                                    },
+                                },
                             }}
                         />
                     </Grid>
@@ -101,29 +146,61 @@ const Search = () => {
                             id="search-button"
                             variant="contained"
                             onClick={handleSearch}
-                            color="primary"
+                            sx={{
+                                borderRadius: '8px',
+                                fontWeight: 500,
+                                backgroundColor: 'rgba(241, 156, 144, 1)'
+                            }}
                         >
                             Search
                         </Button>
                     </Grid>
                 </Grid>
-            </Grid>
 
-            {renderSearchResults && (
-                <div style={{ padding: '10px', width: '100%' }}>
-                    {searchResults.map((result, index) => (
-                        <div key={index} style={{ marginBottom: '10px' }}>
-                            <Typography variant="h6">Movie Title: {result.movie_name}</Typography>
-                            <Typography variant="body1">Director: {result.director_name}</Typography>
-                            <Typography variant="body2">Average Rating: {result.average_score}</Typography>
-                            <Typography variant="body2">Reviews: {result.all_reviews}</Typography>
-                            {index < searchResults.length - 1 && (
-                                <hr style={{ margin: '10px 0', border: '0', borderTop: '1px solid lightgray' }} />
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
+                {renderSearchResults && (
+                    <Grid item xs={12} md={10} lg={8} container justifyContent="center">
+                        <Box sx={{
+                            padding: '20px',
+                            backgroundColor: '#fff',
+                            borderRadius: '8px',
+                            boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.1)',
+                            width: '100%',
+                            maxWidth: '100%'
+                        }}>
+                            {searchResults.map((result, index) => (
+                                <Box key={index} sx={{ marginBottom: '20px' }}>
+                                    <Typography variant="h6" sx={{ color: '#FF6F61' }} id="movie-title">
+                                        Movie Title: {result.movie_name}
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ color: '#4A90E2' }}>
+                                        Director: {result.director_name}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: '#555' }}>
+                                        Average Rating: {result.average_score}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: '#555' }}>
+                                        Reviews:
+                                    </Typography>
+                                    {result.all_reviews ? (
+                                        result.all_reviews.split('|').map((review, reviewIndex) => (
+                                            <Typography key={reviewIndex} variant="body2" sx={{ color: '#555', marginBottom: '4px' }}>
+                                                “{review.trim()}”
+                                            </Typography>
+                                        ))
+                                    ) : (
+                                        <Typography variant="body2" sx={{ color: '#555' }}>
+                                            No reviews available
+                                        </Typography>
+                                    )}
+                                    {index < searchResults.length - 1 && (
+                                        <hr style={{ margin: '10px 0', border: '0', borderTop: '1px solid lightgray' }} />
+                                    )}
+                                </Box>
+                            ))}
+                        </Box>
+                    </Grid>
+                )}
+            </Grid>
         </div>
     );
 };

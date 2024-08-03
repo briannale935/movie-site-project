@@ -34,7 +34,6 @@ app.post('/api/loadUserSettings', (req, res) => {
 		}
 
 		let string = JSON.stringify(results);
-		//let obj = JSON.parse(string);
 		res.send({ express: string });
 	});
 	connection.end();
@@ -133,4 +132,50 @@ app.post('/api/getMovies', (req, res) => {
     connection.end();
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
+app.post('/api/getTrailersWithComments', (req, res) => {
+    let connection = mysql.createConnection(config);
+    let sql = `
+      SELECT 
+        t.id as trailerID, t.url, 
+        c.id as commentID, c.userID, c.commentText,
+        m.name as movieName
+      FROM trailers t
+      LEFT JOIN comments c ON t.id = c.trailerID
+      LEFT JOIN movies m ON t.movieID = m.id
+      ORDER BY t.id, c.id;
+    `;
+  
+    connection.query(sql, (error, results) => {
+      if (error) {
+        console.error('Error fetching trailers and comments:', error.message);
+        return res.status(500).json({ message: 'Failed to fetch trailers and comments' });
+      }
+      res.json(results);
+    });
+  
+    connection.end();
+  });
+  
+  
+  app.post('/api/addComment', (req, res) => {
+    let connection = mysql.createConnection(config);
+    const { trailerID, userID, commentText } = req.body;
+  
+    let sql = `
+      INSERT INTO comments (trailerID, userID, commentText)
+      VALUES (?, ?, ?);
+    `;
+    
+    connection.query(sql, [trailerID, userID, commentText], (error, results) => {
+      if (error) {
+        console.error('Error adding comment:', error.message);
+        return res.status(500).json({ message: 'Failed to add comment' });
+      }
+      res.status(200).json({ message: 'Comment added successfully' });
+    });
+    
+    connection.end();
+  });
+  
+
+app.listen(port, () => console.log(`Listening on port ${port}`)); 
