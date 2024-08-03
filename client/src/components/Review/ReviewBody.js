@@ -11,6 +11,7 @@ function ReviewBody({ enteredReview, handleReviewChange }) {
       multiline
       rows={4}
       fullWidth
+      inputProps={{ maxLength: 200 }}
     />
   );
 }
